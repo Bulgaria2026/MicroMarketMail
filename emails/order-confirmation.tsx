@@ -23,6 +23,7 @@ interface Product {
   price: number;
   discount: number;
   amount: number;
+  lineTotal: number;
 }
 
 interface Order {
@@ -43,9 +44,6 @@ const formatEur = (value: number) =>
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   })}`;
-
-const formatLineTotal = (item: Product) =>
-  formatEur(item.price * item.amount * (1 - item.discount / 100));
 
 // Build a Thymeleaf inline-text expression that prints a number as "€12.34".
 // Regular (non-template) string, so the literal ${...} survives for Thymeleaf.
@@ -188,14 +186,8 @@ export const OrderConfirmationEmail = ({
                   align="right"
                   className="w-22 pt-4 text-sm font-medium text-foreground"
                 >
-                  <span
-                    {...thText(
-                      eurExpr(
-                        "item.price * item.amount * (1 - item.discount / 100.0)",
-                      ),
-                    )}
-                  >
-                    {formatLineTotal(item)}
+                  <span {...thText(eurExpr("item.lineTotal"))}>
+                    {formatEur(item.lineTotal)}
                   </span>
                 </Column>
               </Row>
@@ -263,6 +255,7 @@ const sampleOrder: Order = {
       price: 14.9,
       discount: 10,
       amount: 1,
+      lineTotal: 13.41,
     },
     {
       name: "Organic Tomato Paste",
@@ -270,6 +263,7 @@ const sampleOrder: Order = {
       price: 6.5,
       discount: 0,
       amount: 2,
+      lineTotal: 13.0,
     },
     {
       name: "Handmade Sourdough",
@@ -277,6 +271,7 @@ const sampleOrder: Order = {
       price: 4.2,
       discount: 0,
       amount: 3,
+      lineTotal: 12.6,
     },
   ],
   subtotal: 40.5,
